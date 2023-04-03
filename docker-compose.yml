@@ -1,0 +1,25 @@
+version: "2"
+
+services:
+  clamav-mirror:
+    image: nginx:1.18
+    container_name: clamav-mirror
+    network_mode: bridge
+    restart: on-failure
+    environment:
+    - TZ=Asia/Shanghai
+    ports:
+    - "80:80"
+    volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf
+    - /data/clamav-mirror:/clamav
+  clamav-syncer:
+    build:
+      context: .
+    container_name: clamav-syncer
+    network_mode: bridge
+    restart: on-failure
+    environment:
+    - DATABASE_UPDATE_INTERVAL_HOUR=2
+    volumes:
+    - /data/clamav-mirror:/clamav
